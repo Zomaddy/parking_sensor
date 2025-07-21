@@ -2,8 +2,8 @@
 #define echoPin1 2
 #define buzz 8
 
-int duration;
-float distance;
+unsigned long duration;
+unsigned long distance;
 int intervalValue; //czas pomiędzy jednym a drugim piknięciem
 unsigned int measureCounter = 0; //odliczanie czasu, który minął od piknięcia
 volatile unsigned long startTime = 0;
