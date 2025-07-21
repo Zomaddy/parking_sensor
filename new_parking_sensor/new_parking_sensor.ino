@@ -1,11 +1,11 @@
-#define trigPin1 13
-#define echoPin1 2
+#define trigPin 13
+#define echoPin 2
 #define buzz 8
 
 unsigned long duration;
 unsigned long distance;
-int intervalValue; //czas pomiędzy jednym a drugim piknięciem
-unsigned int measureCounter = 0; //odliczanie czasu, który minął od piknięcia
+int intervalValue; 
+unsigned int measureCounter = 0; 
 volatile unsigned long startTime = 0;
 volatile unsigned long endTime = 0;
 
@@ -18,9 +18,8 @@ void setup() {
 }
 
 void loop() {
-  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, RISING); //mierzy czas kiedy echo zaczyna być HIGH
+  attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING); 
   digitalWrite(trigPin, HIGH);
-  startTime = micros();
   delay(10);
   digitalWrite(trigPin, LOW);
   
@@ -52,10 +51,10 @@ void loop() {
   Serial.println(distance);
 }
 
-//void echoStartTime(){
-//  startTime = micros();
-//  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); //mierzy czas kiedy echo przestaje być HIGH
-//}
+void echoStartTime(){
+  startTime = micros();
+  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); 
+}
 
 void echoEndTime(){
   endTime = micros();
