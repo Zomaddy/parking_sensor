@@ -10,7 +10,6 @@ volatile unsigned long startTime = 0;
 volatile unsigned long endTime = 0;
 
 void setup() {
-  // put your setup code here, to run once:
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(buzz, OUTPUT);
@@ -19,9 +18,9 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING); //mierzy czas kiedy echo zaczyna być HIGH
+  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, RISING); //mierzy czas kiedy echo zaczyna być HIGH
   digitalWrite(trigPin, HIGH);
+  startTime = micros();
   delay(10);
   digitalWrite(trigPin, LOW);
   
@@ -53,10 +52,10 @@ void loop() {
   Serial.println(distance);
 }
 
-void echoStartTime(){
-  startTime = micros();
-  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); //mierzy czas kiedy echo przestaje być HIGH
-}
+//void echoStartTime(){
+//  startTime = micros();
+//  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); //mierzy czas kiedy echo przestaje być HIGH
+//}
 
 void echoEndTime(){
   endTime = micros();
