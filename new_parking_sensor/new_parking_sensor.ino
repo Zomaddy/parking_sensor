@@ -18,13 +18,36 @@ void setup() {
 }
 
 void loop() {
+
+  measureTimeAndDistance();
+
+  distanceBeeping();
+
+  Serial.println(distance);
+
+}
+
+void measureTimeAndDistance(){
   attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING); 
   digitalWrite(trigPin, HIGH);
   delay(10);
   digitalWrite(trigPin, LOW);
-  
+
   duration = endTime - startTime;
   distance = duration/58;
+}
+
+void echoStartTime(){
+  startTime = micros();
+  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); 
+}
+
+void echoEndTime(){
+  endTime = micros();
+  detachInterrupt(digitalPinToInterrupt(2));
+}
+
+void distanceBeeping(){
 
   measureCounter++;
 
@@ -47,16 +70,7 @@ void loop() {
     tone(8,294,intervalValue);
     measureCounter = 0;
   }
-
-  Serial.println(distance);
 }
 
-void echoStartTime(){
-  startTime = micros();
-  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); 
-}
 
-void echoEndTime(){
-  endTime = micros();
-  detachInterrupt(digitalPinToInterrupt(2));
-}
+
