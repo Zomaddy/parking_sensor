@@ -4,52 +4,66 @@
 
 unsigned long duration;
 unsigned long distance;
-int intervalValue; 
-unsigned int measureCounter = 0; 
+unsigned long startTrigTime;
+int intervalValue;
+unsigned long measureCounter;
+unsigned long previousCounter = 0;
 volatile unsigned long startTime = 0;
 volatile unsigned long endTime = 0;
+volatile bool wholeTime = false;
 
 void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   pinMode(buzz, OUTPUT);
 
+  attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING);
+
   Serial.begin(9600);
+
 }
 
 void loop() {
-
   measureTimeAndDistance();
 
   distanceBeeping();
 
   Serial.println(distance);
-
 }
 
 void measureTimeAndDistance(){
-  attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING); 
-  digitalWrite(trigPin, HIGH);
-  delay(10);
-  digitalWrite(trigPin, LOW);
 
-  duration = endTime - startTime;
-  distance = duration/58;
+  if (wholeTime){
+    noInterrupts();
+    duration = endTime - startTime;
+    distance = duration/58;
+    wholeTime = false;
+    interrupts();
+
+    attachInterrupt(digitalPinToInterrupt(2), echoStartTime, RISING);
+  } else {
+    startTrigTime = micros();
+    while(micros() - startTrigTime < 10){
+      digitalWrite(trigPin, HIGH);
+    }
+      digitalWrite(trigPin, LOW);
+    }
 }
 
 void echoStartTime(){
   startTime = micros();
-  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING); 
+  attachInterrupt(digitalPinToInterrupt(2), echoEndTime, FALLING);
 }
 
 void echoEndTime(){
   endTime = micros();
+  wholeTime = true;
   detachInterrupt(digitalPinToInterrupt(2));
 }
 
 void distanceBeeping(){
 
-  measureCounter++;
+  measureCounter = millis();
 
   if(distance >= 60){
     intervalValue = -1;
@@ -65,12 +79,9 @@ void distanceBeeping(){
     intervalValue = 0;
   }
   if(intervalValue < 0){
-    noTone(8);
-  }else if(measureCounter*10 > intervalValue){
-    tone(8,294,intervalValue);
-    measureCounter = 0;
+    noTone(buzz);
+  }else if(measureCounter - previousCounter >= intervalValue){
+    tone(buzz,294,intervalValue);
+    previousCounter = measureCounter;
   }
 }
-
-
-
